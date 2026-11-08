@@ -1,0 +1,32 @@
+import * as cheerio from 'cheerio';
+
+type SearchResult = {
+    id: string;
+    name: string;
+    jname: string;
+};
+
+const url = "https://hianime.at/search?keyword=firefly";
+const agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
+const res = await fetch(url, { headers: { "User-Agent": agent } });
+const html = await res.text();
+
+const results: SearchResult[] = [];
+
+const $ = cheerio.load(html);
+
+$('.film_list-wrap').find('.film-name a').each((index, element) => {
+    const href = $(element).attr('href');
+    const name = $(element).attr('title');
+    const jname = $(element).attr('data-jname');
+    if (!href || !name || !jname) return;
+    
+    const id = href?.split('/').at(-1);
+    if (!id) return;
+
+    results.push({ id: href, name: name, jname: jname});
+});
+
+console.log(results);
+
