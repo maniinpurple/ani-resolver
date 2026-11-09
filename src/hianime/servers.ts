@@ -1,5 +1,7 @@
 import * as cheerio from "cheerio";
 
+const agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
 type Server = {
     name: string;
     type: "sub" | "dub";
@@ -13,7 +15,6 @@ type ServerListResponse = {
 
 async function servers(episodeId: number): Promise<Server[]> {
     const url = `https://hianime.at/api/theme/episode/servers?episodeId=${episodeId}`;
-    const agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
     const res = await fetch(url, { headers: { "User-Agent": agent } });
     const data: ServerListResponse = await res.json();
     const results: Server[] = [];
@@ -42,6 +43,6 @@ async function servers(episodeId: number): Promise<Server[]> {
 
 
 
-console.log(await servers(9227));
+console.log(await servers(149966));
 
 

@@ -1,5 +1,8 @@
 import * as cheerio from 'cheerio';
 
+const agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
+
 type SearchResult = {
     id: string;
     name: string;
@@ -9,7 +12,6 @@ type SearchResult = {
 async function search(q: string): Promise<SearchResult[]> {
     const formattedQuery = q.replaceAll(" ", "+");
     const url = `https://hianime.at/search?keyword=${formattedQuery}`;
-    const agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
     const res = await fetch(url, { headers: { "User-Agent": agent } });
     const html = await res.text();
     const results: SearchResult[] = [];
