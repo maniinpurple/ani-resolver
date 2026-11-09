@@ -45,7 +45,7 @@ async function episodes(animeId: string): Promise<Episode[]> {
     return results;
 }
 
-console.log(await episodes("frieren-beyond-journeys-end-18542"));
+console.log(await episodes("blue-box-season-2-7182"));
 
 
 
