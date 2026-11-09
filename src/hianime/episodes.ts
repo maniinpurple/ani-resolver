@@ -1,25 +1,25 @@
 import * as cheerio from 'cheerio';
 
 type Episode = {
-    dataId: number;
-    ssliOrder: number;
-    dataHref: string;
-    dataJname: string;
+    id: number;
+    number: number;
+    url: string;
+    jname: string;
     title: string;
 }
 
-type AjaxResponse = {
+type EpisodeListResponse = {
     status: boolean;
     totalItems?: number;
     html?: string;
 }
 
-async function episodes(raw_url: string): Promise<Episode[]> {
-    const animeId = raw_url.split('-').at(-1);
-    const url = `https://hianime.at/api/theme/episode/list/${animeId}`;
+async function episodes(animeId: string): Promise<Episode[]> {
+    const numericId = animeId.split('-').at(-1);
+    const url = `https://hianime.at/api/theme/episode/list/${numericId}`;
     const agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
     const res = await fetch(url, { headers: { "User-Agent": agent } });
-    const data: AjaxResponse = await res.json();
+    const data: EpisodeListResponse = await res.json();
     const results: Episode[] = [];
     if (!data.status || !data.html) return results;
     const $ = cheerio.load(data.html);
@@ -34,10 +34,10 @@ async function episodes(raw_url: string): Promise<Episode[]> {
         if (!dataId || !ssliOrder || !dataHref || !dataJname || !title) return;
 
         results.push({
-            dataId: parseInt(dataId),
-            ssliOrder: parseInt(ssliOrder),
-            dataHref: dataHref,
-            dataJname: dataJname,
+            id: parseInt(dataId),
+            number: parseInt(ssliOrder),
+            url: dataHref,
+            jname: dataJname,
             title: title
         });
     });
