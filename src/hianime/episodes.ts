@@ -1,0 +1,54 @@
+import * as cheerio from 'cheerio';
+
+type Episode = {
+    dataId: number;
+    ssliOrder: number;
+    dataHref: string;
+    dataJname: string;
+    title: string;
+}
+
+type AjaxResponse = {
+    status: boolean;
+    totalItems?: number;
+    html?: string;
+}
+
+async function episodes(raw_url: string): Promise<Episode[]> {
+    const animeId = raw_url.split('-').at(-1);
+    const url = `https://hianime.at/api/theme/episode/list/${animeId}`;
+    const agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+    const res = await fetch(url, { headers: { "User-Agent": agent } });
+    const data: AjaxResponse = await res.json();
+    const results: Episode[] = [];
+    if (!data.status || !data.html) return results;
+    const $ = cheerio.load(data.html);
+
+    $('.ss-list').find('a').each((index, element) => {
+        const dataId = $(element).attr('data-id');
+        const ssliOrder = $(element).attr('data-number');
+        const dataHref = $(element).attr('href');
+        const dataJname = $(element).find('.ssli-detail .ep-name').attr('data-jname');
+        const title = $(element).attr('title');
+
+        if (!dataId || !ssliOrder || !dataHref || !dataJname || !title) return;
+
+        results.push({
+            dataId: parseInt(dataId),
+            ssliOrder: parseInt(ssliOrder),
+            dataHref: dataHref,
+            dataJname: dataJname,
+            title: title
+        });
+    });
+    
+    return results;
+}
+
+console.log(await episodes("frieren-beyond-journeys-end-18542"));
+
+
+
+
+
+
